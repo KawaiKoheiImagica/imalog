@@ -36,7 +36,7 @@
 			</div>
 			<div class="modal-body">
 			  <% if @shops.any? %>
-				  aaaaaaa
+				  <%= link_to @shops.first.name, shop_path(@shops.first) %>
 			  <% end %>
 			</div>
 			<div class="modal-footer">
