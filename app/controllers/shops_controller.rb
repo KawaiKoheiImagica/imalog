@@ -1,4 +1,10 @@
 class ShopsController < ApplicationController
+  def index
+    @users=User.all
+    @commentlists=Commentlist.all
+    @shops = Shop.all.page(params[:page])
+  end
+  
   def show
     @user = User.all
     @shops = Shop.all

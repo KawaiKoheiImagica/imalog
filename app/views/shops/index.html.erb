@@ -1,0 +1,23 @@
+<div class="table-responsive">
+  <table class="table table-striped">
+      <thead>
+        <tr class="success">
+          <th>店名</th>
+          <th>開拓者</th>
+          <th>日付</th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @shops.each do |shop| %>
+          <tr class="active">
+            <td><%= link_to shop.name, shop_path(shop) %></td>
+            <td><%= @users.find_by(id: shop.user_id).name  %></td>
+            <td><%= shop.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+    </div>
+  <div>
+    <%= paginate @shops %>
+  </div>

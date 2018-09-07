@@ -15,6 +15,7 @@
         <ul class="nav navbar-nav navbar-right">
           <% if logged_in? %>
             <li><a data-toggle="modal" data-target="#sampleModal">迷ったらココ</a></li>
+            <li><%= link_to '全てのお店一覧', shops_path %></li>
             <li><%= link_to '行ったお店一覧', user_path(current_user) %></li>
             <li><%= link_to 'ログアウト', logout_path, method: :delete %></li>
           <% else %>
@@ -36,7 +37,7 @@
 			</div>
 			<div class="modal-body">
 			  <% if @shops.any? %>
-				  <%= link_to @shops.order("RANDOM()").first.name, shop_path(@shops.order("RANDOM()").first) %>
+				  
 			  <% end %>
 			</div>
 			<div class="modal-footer">

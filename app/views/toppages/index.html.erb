@@ -4,86 +4,180 @@
     <div id="map" style="width:100%; height:78vh;"></div>
   </div>
   <script>
+    
     var marker=[]
     var infoWindow=[]
     var newshop
-    function getClickLatLng2(lat_lng, map) {
-      infoWindow.forEach(function(value) {
-            if(value) value.close();
-          });
-      if(newshop) newshop.close();
-      var infoWindowOpts = {
-        position: new google.maps.LatLng(lat_lng.lat(), lat_lng.lng()),
-        //content: "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'><input type='hidden' name='authenticity_token' value='BAMUGS/pIymNj97abWslvFuNKCbEUtZgVC7Ailw5XmpTERhGu1JnqDgMqYnn333sreB6Dlp44GMvjwI15/Zb2g=='><label for='shop_name'>名前</label><input type='text' name='shop[name]' id='shop_name'><input type='submit' name='commit' value='投稿' data-disable-with='投稿'></form>"
-        content:"<h3>店名登録</h3>"+
-                "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'>"+
-                "<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>"+
-                "<label for='shop_name'>名前</label>"+
-                "<input type='text' name='shop[name]' id='shop_name'>"+
-                "<input type='hidden' value='"+lat_lng.lat()+"' name='shop[latitude]' id='shop_latitude'>"+
-                "<input type='hidden' value='"+lat_lng.lng()+"' name='shop[longitude]' id='shop_longitude'>"+
-                "<input type='submit' name='commit' value='登録' class='btn btn-warning btn-block' data-disable-with='登録'>"+
-                "</form>"
-                
-      };
-      // 直前で作成したInfoWindowOptionsを利用してInfoWindowを作成
-      newshop = new google.maps.InfoWindow(infoWindowOpts);
-      // 地図上にInfoWindowを表示
-      newshop.open(map);
-      //newshop.close();
+    var now
+  function getClickLatLng2(lat_lng, map) {
+    infoWindow.forEach(function(value) {
+          if(value) value.close();
+        });
+    if(newshop) newshop.close();
+    var infoWindowOpts = {
+      position: new google.maps.LatLng(lat_lng.lat(), lat_lng.lng()),
+      //content: "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'><input type='hidden' name='authenticity_token' value='BAMUGS/pIymNj97abWslvFuNKCbEUtZgVC7Ailw5XmpTERhGu1JnqDgMqYnn333sreB6Dlp44GMvjwI15/Zb2g=='><label for='shop_name'>名前</label><input type='text' name='shop[name]' id='shop_name'><input type='submit' name='commit' value='投稿' data-disable-with='投稿'></form>"
+      content:"<h3>店名登録</h3>"+
+              "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'>"+
+              "<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>"+
+              "<label for='shop_name'>名前</label>"+
+              "<input type='text' name='shop[name]' id='shop_name'>"+
+              "<input type='hidden' value='"+lat_lng.lat()+"' name='shop[latitude]' id='shop_latitude'>"+
+              "<input type='hidden' value='"+lat_lng.lng()+"' name='shop[longitude]' id='shop_longitude'>"+
+              "<input type='submit' name='commit' value='登録' class='btn btn-warning btn-block' data-disable-with='登録'>"+
+              "</form>"
+              
+    };
+    // 直前で作成したInfoWindowOptionsを利用してInfoWindowを作成
+    newshop = new google.maps.InfoWindow(infoWindowOpts);
+    // 地図上にInfoWindowを表示
+    newshop.open(map);
+    //newshop.close();
 
+  }
+  function initMap2() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        function(position) {
+          now=new google.maps.LatLng(position.coords.latitude, position.coords.longitude);
+          // マップの初期化
+          var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            //center: {lat: 35.6235288, lng: 139.7269575}
+            center: now
+          });
+          var styleOptions = [{
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [
+                { visibility: "off" }
+            ]}
+          ];
+          map.setOptions({styles: styleOptions});
+          var i=0;
+          
+          <% @shops.each do |shop| %>
+          var markerOpts = {
+            
+            position: new google.maps.LatLng(<%= shop.latitude %>, <%= shop.longitude %>),
+            map: map,
+            title: i+":<%= shop.name %>"
+          };
+          
+          // 直前で作成したMarkerOptionsを利用してMarkerを作成
+          marker[i] = new google.maps.Marker(markerOpts);
+          infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+            content: '<h3><%= link_to shop.name, shop_path(shop) %></h3>'+
+                      '<% @newcomment.shop_id = shop.id %>'+
+                      '<%= form_for(@newcomment) do |f| %>'+
+                      '<div class="form-group"><%= f.label :menu, "メニュー：" %>'+
+                      '<%= f.text_field :menu %></div>'+
+                      '<div class="form-group"><%= f.label :comment, "コメント：" %>'+
+                      '<%= f.text_field :comment %></div>'+
+                      '<%= f.hidden_field :shop_id %>'+
+                      '<%= f.submit "登録" ,class: "btn btn-warning btn-block" %>'+
+                      '<% end %>'+// 吹き出しに表示する内容
+                      '<%= link_to 'マーカーを削除', shop_path(shop), method: :delete, data: { confirm: '本当に削除してよろしいですか？' } %>'
+          });
+          markerEvent(i); // マーカーにクリックイベントを追加
+          
+          i++;
+          <% end %>
+          var markerOpts_now = {
+            
+            position: now,
+            map: map,
+            icon: {
+          		fillColor: "#0000FF",                //塗り潰し色
+          		fillOpacity: 0.8,                    //塗り潰し透過率
+          		path: google.maps.SymbolPath.CIRCLE, //円を指定
+          		scale: 16,                           //円のサイズ
+          		strokeColor: "#0000FF",              //枠の色
+          		strokeWeight: 1.0                    //枠の透過率
+          	},
+          	label: {
+          		text: 'here',                           //ラベル文字
+          		color: '#FFFFFF',                    //文字の色
+          		fontSize: '10px'                     //文字のサイズ
+          	}
+          };
+          marker[i] = new google.maps.Marker(markerOpts_now);
+          infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+            position: new google.maps.LatLng(position.coords.latitude, position.coords.longitude),
+            content:"<h3>現在地に店名登録</h3>"+
+              "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'>"+
+              "<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>"+
+              "<label for='shop_name'>名前</label>"+
+              "<input type='text' name='shop[name]' id='shop_name'>"+
+              "<input type='hidden' value='"+position.coords.latitude+"' name='shop[latitude]' id='shop_latitude'>"+
+              "<input type='hidden' value='"+position.coords.longitude+"' name='shop[longitude]' id='shop_longitude'>"+
+              "<input type='submit' name='commit' value='登録' class='btn btn-warning btn-block' data-disable-with='登録'>"+
+              "</form>"
+          });
+          markerEvent_now(i);
+          // クリックイベントを追加
+          map.addListener('click', function(e) {
+            getClickLatLng2(e.latLng, map);
+          });
+        },
+        function(error){
+          alert("位置情報の利用が許可されていません");
+          // マップの初期化
+          var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 17,
+            center: {lat: 35.6235288, lng: 139.7269575}
+          });
+          var styleOptions = [{
+            featureType: "poi",
+            elementType: "labels",
+            stylers: [
+                { visibility: "off" }
+            ]}
+          ];
+          map.setOptions({styles: styleOptions});
+          var i=0;
+          
+          <% @shops.each do |shop| %>
+          var markerOpts = {
+            
+            position: new google.maps.LatLng(<%= shop.latitude %>, <%= shop.longitude %>),
+            map: map,
+            title: i+":<%= shop.name %>"
+          };
+          // 直前で作成したMarkerOptionsを利用してMarkerを作成
+          marker[i] = new google.maps.Marker(markerOpts);
+          
+          
+          infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+            content: '<h3><%= link_to shop.name, shop_path(shop) %></h3>'+
+                      '<% @newcomment.shop_id = shop.id %>'+
+                      '<%= form_for(@newcomment) do |f| %>'+
+                      '<div class="form-group"><%= f.label :menu, "メニュー：" %>'+
+                      '<%= f.text_field :menu %></div>'+
+                      '<div class="form-group"><%= f.label :comment, "コメント：" %>'+
+                      '<%= f.text_field :comment %></div>'+
+                      '<%= f.hidden_field :shop_id %>'+
+                      '<%= f.submit "登録" ,class: "btn btn-warning btn-block" %>'+
+                      '<% end %>'+// 吹き出しに表示する内容
+                      '<%= link_to 'マーカーを削除', shop_path(shop), method: :delete, data: { confirm: '本当に削除してよろしいですか？' } %>'
+          });
+          markerEvent(i); // マーカーにクリックイベントを追加
+          
+          i++;
+          <% end %>
+          
+          // クリックイベントを追加
+          map.addListener('click', function(e) {
+            getClickLatLng2(e.latLng, map);
+          });
+        }
+      );
+    
+          
     }
-    function initMap2() {
-      // マップの初期化
-      var map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 17,
-        center: {lat: 35.6235288, lng: 139.7269575}
-      });
-      var styleOptions = [{
-        featureType: "poi",
-        elementType: "labels",
-        stylers: [
-            { visibility: "off" }
-        ]}
-    ];
-    map.setOptions({styles: styleOptions});
-      var i=0;
       
-      <% @shops.each do |shop| %>
-      var markerOpts = {
-        
-        position: new google.maps.LatLng(<%= shop.latitude %>, <%= shop.longitude %>),
-        map: map,
-        title: i+":<%= shop.name %>"
-      };
-      // 直前で作成したMarkerOptionsを利用してMarkerを作成
-      marker[i] = new google.maps.Marker(markerOpts);
-      
-      
-      infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
-        content: '<h3><%= link_to shop.name, shop_path(shop) %></h3>'+
-                  '<% @newcomment.shop_id = shop.id %>'+
-                  '<%= form_for(@newcomment) do |f| %>'+
-                  '<div class="form-group"><%= f.label :menu, "メニュー：" %>'+
-                  '<%= f.text_field :menu %></div>'+
-                  '<div class="form-group"><%= f.label :comment, "コメント：" %>'+
-                  '<%= f.text_field :comment %></div>'+
-                  '<%= f.hidden_field :shop_id %>'+
-                  '<%= f.submit "登録" ,class: "btn btn-warning btn-block" %>'+
-                  '<% end %>'+// 吹き出しに表示する内容
-                  '<%= link_to 'マーカーを削除', shop_path(shop), method: :delete, data: { confirm: '本当に削除してよろしいですか？' } %>'
-      });
-      markerEvent(i); // マーカーにクリックイベントを追加
-      
-      i++;
-      <% end %>
-      
-      // クリックイベントを追加
-      map.addListener('click', function(e) {
-        getClickLatLng2(e.latLng, map);
-      });
-      
-    }
+  }
+    
     // マーカーにクリックイベントを追加
     function markerEvent(i) {
       marker[i].addListener('click', function() { // マーカーをクリックしたとき
@@ -96,6 +190,17 @@
       });
     }
     
+    function markerEvent_now(i) {
+      marker[i].addListener('click', function() { // マーカーをクリックしたとき
+          infoWindow.forEach(function(value) {
+            if(value) value.close();
+          });
+          
+          if(newshop) newshop.close();
+          infoWindow[i].open(map, marker[i]); // 吹き出しの表示
+      });
+    }
+  
   </script>
   <script async defer
     src="https://maps.googleapis.com/maps/api/js?key=<% ENV['GMAP_APIKey'] %>&callback=initMap2">
