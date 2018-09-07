@@ -1,7 +1,7 @@
 
 <% if logged_in? %>
   <div id="container">
-    <div id="map" style="width:100%; height:85vh;"></div>
+    <div id="map" style="width:100%; height:78vh;"></div>
   </div>
   <script>
     var marker=[]
@@ -15,7 +15,7 @@
       var infoWindowOpts = {
         position: new google.maps.LatLng(lat_lng.lat(), lat_lng.lng()),
         //content: "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'><input type='hidden' name='authenticity_token' value='BAMUGS/pIymNj97abWslvFuNKCbEUtZgVC7Ailw5XmpTERhGu1JnqDgMqYnn333sreB6Dlp44GMvjwI15/Zb2g=='><label for='shop_name'>名前</label><input type='text' name='shop[name]' id='shop_name'><input type='submit' name='commit' value='投稿' data-disable-with='投稿'></form>"
-        content:"<h1>店名登録</h1>"+
+        content:"<h3>店名登録</h3>"+
                 "<form class='new_shop' id='new_shop' action='/shops' accept-charset='UTF-8' method='post'><input name='utf8' type='hidden' value='✓'>"+
                 "<input type='hidden' name='authenticity_token' value='<%= form_authenticity_token %>'>"+
                 "<label for='shop_name'>名前</label>"+
@@ -61,7 +61,7 @@
       
       
       infoWindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
-        content: '<h1><%= link_to shop.name, shop_path(shop) %></h1>'+
+        content: '<h3><%= link_to shop.name, shop_path(shop) %></h3>'+
                   '<% @newcomment.shop_id = shop.id %>'+
                   '<%= form_for(@newcomment) do |f| %>'+
                   '<div class="form-group"><%= f.label :menu, "メニュー：" %>'+
