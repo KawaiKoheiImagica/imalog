@@ -1,0 +1,35 @@
+<div class="title">
+  <h1><%= @user.name %>の昼食の履歴</h1>
+</div>
+<div class="table-responsive">
+  <table class="table table-striped">
+    <thead>
+      <tr class="warning">
+        <th>店名</th>
+        <th>メニュー</th>
+        <th>コメント</th>
+        <th>日付</th>
+        <% if current_user.id == @user.id %>
+          <th></th>
+        <% end %>
+      </tr>
+    </thead>
+    <tbody>
+      <% @commentlist.each do |cl| %>
+        <tr class="active">
+          <td><%= link_to @shops.find(cl.shop_id).name, shop_path(@shops.find(cl.shop_id)) %></td>
+          <td><%= cl.menu %></td>
+          <td><%= cl.comment %></td>
+          <td><%= cl.created_at.strftime("%Y-%m-%d %H:%M") %></td>
+          <% if current_user.id == @user.id %>
+            <td><%= link_to '削除', commentlist_path(cl), method: :delete, data: { confirm: '本当に削除してよろしいですか？' } %></td>
+          <% end %>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+  <div>
+    <%= paginate @commentlist %>
+  </div>
+    
