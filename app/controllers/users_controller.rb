@@ -18,7 +18,7 @@ class UsersController < ApplicationController
 
   def create
     @user = User.new(user_params)
-
+    @shops=Shop.all
     if @user.save
       flash[:success] = 'ユーザを登録しました。'
       redirect_to @user

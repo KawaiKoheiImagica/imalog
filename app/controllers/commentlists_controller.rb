@@ -3,7 +3,7 @@ class CommentlistsController < ApplicationController
     @cl=current_user.commentlists.build(cl_params)
     if @cl.save
       flash[:success] = 'メッセージを投稿しました。'
-      redirect_to root_url
+      redirect_to user_url(current_user)
     else
       flash.now[:danger] = 'メッセージの投稿に失敗しました。'
       redirect_to root_url

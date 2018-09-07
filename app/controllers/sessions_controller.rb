@@ -4,6 +4,7 @@ class SessionsController < ApplicationController
   end
 
   def create
+    @shops=Shop.all
     email = params[:session][:email].downcase
     password = params[:session][:password]
     if login(email, password)

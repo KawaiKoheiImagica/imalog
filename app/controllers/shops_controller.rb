@@ -16,13 +16,13 @@ class ShopsController < ApplicationController
   
   def create
     @shop = current_user.shops.build(shop_params)
-
+    @shops=Shop.all
     if @shop.save
       flash[:success] = 'Shopが正常に登録されました'
       redirect_to shop_path(@shop)
     else
-      flash.now[:danger] = 'Shopが登録されませんでした'
-      render :new
+      flash[:danger] = 'Shopが登録されませんでした'
+      redirect_to root_url
     end
   end
 
