@@ -25,19 +25,41 @@ img {
   max-width: 100%;
   height: auto;
 }
-html,body {
-  
-  background-attachment: fixed;
-  background-image: url("/images/cook.jpg");
-  background-position: center center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  height: 100vh;
-  
-  height: 100%;
-  width: 100%;
-  margin: 0;
-  padding: 0;
+
+@media only screen and (max-width: 767px){
+  html,body {
+    
+    background-attachment: fixed;
+    background-image: url("/images/cook2.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    
+  }
+}
+
+@media only screen and (min-width: 768px), print {
+  html,body {
+    
+    background-attachment: fixed;
+    background-image: url("/images/cook.jpg");
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100vh;
+    
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    
+  }
   
 }
 body { 
