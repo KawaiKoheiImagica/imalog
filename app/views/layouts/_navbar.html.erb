@@ -37,7 +37,7 @@
 			</div>
 			<div class="modal-body">
 			  <% if @shops.any? %>
-				  
+				  <%= link_to @shops.order("RANDOM()").first.name, shop_path(@shops.order("RANDOM()").first) %>
 			  <% end %>
 			</div>
 			<div class="modal-footer">
