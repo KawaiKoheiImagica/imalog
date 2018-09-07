@@ -35,7 +35,9 @@
 				<h4 class="modal-title">今日行くべきお店はココ！！！！</h4>
 			</div>
 			<div class="modal-body">
-			  
+			  <% if @shops.any? %>
+				  <%= link_to @shops.order("RAND()").first.name, shop_path(@shops.order("RAND()").first) %>
+			  <% end %>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">閉じる</button>
